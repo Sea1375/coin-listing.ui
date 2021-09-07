@@ -1,11 +1,21 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://18.224.33.76:3000/api/';
+// const BASE_URL = 'http://18.224.33.76:3000/api/';
+const BASE_URL = 'http://localhost:3000/api/';
 export const Api = {
     addEntry: (data) => {
         return axios({
             method: 'post',
             url: 'add_entry',
+            data: data,
+            baseURL: BASE_URL
+        });
+    },
+    
+    removeEntry: (data) => {
+        return axios({
+            method: 'post',
+            url: 'remove_entry',
             data: data,
             baseURL: BASE_URL
         });

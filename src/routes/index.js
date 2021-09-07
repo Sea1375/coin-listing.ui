@@ -7,7 +7,7 @@ function Routes () {
         <Router>
             <div>
                 <Switch>
-                    <Route path="/entry">
+                    <Route path="/admin">
                         <Entry />
                     </Route>
                     <Route path="/">

@@ -13,7 +13,7 @@ class Header extends React.Component {
                         <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <Nav.Link as={Link} to="/home">Home</Nav.Link>
-                            <Nav.Link as={Link} to="/entry">Entry</Nav.Link>
+                            <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
                         </Nav>
                         </Navbar.Collapse>
                     </Container>

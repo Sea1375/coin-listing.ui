@@ -9,28 +9,59 @@ class Entry extends React.Component {
         super(props);
         this.state = {
             address: '',
+            name: '',
             entries: []
         };
 
         // This binding is necessary to make `this` work in the callback
         this.addEntry = this.addEntry.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.removeEntry = this.removeEntry.bind(this);
+        this.handleAddressChange = this.handleAddressChange.bind(this);
+        this.handleNameChange = this.handleNameChange.bind(this);
     }
 
     addEntry() {
+        if (!this.state.name) {
+            alert('Input Token Name');
+            return;    
+        }
+
         if (!this.state.address) {
             alert('Input Token Address');
             return;
         }
 
-        Api.addEntry({address: this.state.address}).then(res => {
+        let param = {
+            name: this.state.name,
+            address: this.state.address
+        }
+
+        console.log(param);
+
+        Api.addEntry(param).then(res => {
             this.loadEntries();
         })
     }
 
-    handleChange(event) {
+    removeEntry(i) {
+        if (window.confirm("Do you really want to delete?")) {
+            Api.removeEntry({id: this.state.entries[i].id}).then(res => {
+                if (res.data.success) {
+                    this.loadEntries();
+                }
+            })    
+        }
+    }
+
+    handleAddressChange(event) {
         this.setState({address: event.target.value});
     }
+
+    handleNameChange(event) {
+        this.setState({name: event.target.value});
+    }
+
+    
 
     componentDidMount() {
         console.log('component mount');
@@ -48,8 +79,12 @@ class Entry extends React.Component {
         let entriesEls = this.state.entries.map((entry, index) => {
             return (
                 <tr key={entry.id}>
-                    <td style={{width: '10%'}}>{index + 1}</td>
-                    <td style={{width: '90%'}}>{entry.address}</td>
+                    <td style={{width: '5%'}}>{index + 1}</td>
+                    <td style={{width: '17%'}}>{entry.name}</td>
+                    <td style={{width: '80%'}}>{entry.address}</td>
+                    <td>
+                        <Button className="btn-sam" onClick={() => this.removeEntry(index)}>Remove</Button>
+                    </td>
                 </tr>
             )
         })
@@ -60,12 +95,16 @@ class Entry extends React.Component {
                 <Container>
                     <div className="pt-3">
                         <Row>
-                            <Col sm="10" className="mt-2">
-                                <Form.Control type="text" placeholder="Enter Token Address"  value={this.state.address} onChange={this.handleChange} />
+                            <Col sm="2" className="mt-2">
+                                <Form.Control type="text" placeholder="Token Name"  value={this.state.name} onChange={this.handleNameChange} />
+                            </Col>
+                            <Col sm="8" className="mt-2">
+                                <Form.Control type="text" placeholder="Token Address"  value={this.state.address} onChange={this.handleAddressChange} />
                             </Col>
                             <Col sm="2" className="mt-2 d-grid gap-2">
                                 <Button onClick={this.addEntry}>Add Entry</Button>
                             </Col>
+                            
                         </Row>
                     </div>
 
@@ -74,7 +113,9 @@ class Entry extends React.Component {
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>Name</th>
                                     <th>Address</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>

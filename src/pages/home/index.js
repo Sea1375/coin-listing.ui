@@ -6,6 +6,36 @@ import { DataGrid, GridColDef, GridToolbar } from '@material-ui/data-grid';
 import { Sparklines, SparklinesLine, SparklinesSpots } from "react-sparklines";
 import {Container} from 'react-bootstrap';
 import LongMenu from './menu';
+import na_img from '../../assets/n_a.png';
+
+const renderGraphCell = function(params, mode=3) {
+  
+  return params.value.length == 1 ? (
+    <><img src={na_img} style={{width: '90%'}}/></>
+  ) : 
+  (
+    <>
+      <div style={{width:'65%'}}>
+        <Sparklines
+            data={convertVal(params.value)}
+            margin={6}
+            height={40}
+            width={200}
+            >
+            <SparklinesLine
+                style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, mode) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
+            />
+          
+        </Sparklines>
+      </div>
+      <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
+        <font style={{color:calculatePercentage(params.value, mode) >= 0 ? "#2fa608":"#c71208"}}>
+        {calculatePercentage(params.value, mode) >= 0? ' + ':' '} {calculatePercentage(params.value, mode)} %
+        </font>
+      </div>
+    </>
+  )
+}
 
 const columns : GridColDef[] = [
   {field: 'id', headerName: 'id', width: '30' ,description:
@@ -55,9 +85,9 @@ const columns : GridColDef[] = [
     field: 'address', headerName: 'Address', minWidth: 350 ,
     headerClassName:'Column-header',
     headerAlign:'center',
-    renderCell: (params) => {
-      <font color='red'>params.value</font>
-    },
+    renderCell: (params) => (
+      <a href={"https://etherscan.io/token/" + params.value} target="_blank">{params.value}</a>
+    ),
     renderHeader: (params: GridColumnHeaderParams) => (
       <strong>
         {'Address'}
@@ -107,33 +137,27 @@ const columns : GridColDef[] = [
   },
 
   {
+    field: 'decimalPrice', headerName: 'Decimal Price', minWidth: 150, 
+    headerClassName:'Column-header',
+    valueGetter:(params) => {
+        var value = params.getValue(params.id, 'price');
+        value = decimalPrice(Number(value));
+          return `$${value}`;
+    },
+    renderHeader: (params: GridColumnHeaderParams) => (
+        <strong>
+          {'Decimal Price'}
+        </strong>
+    ),
+  },
+
+  {
     field: 'pricies0',
     headerName: 'Price % variation for 30m',
     headerClassName:'Column-header',
     minWidth: 180,
-    sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 0) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 0) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 0) >= 0? ' + ':' '} {calculatePercentage(params.value, 0)} %
-            </font>
-          </div>
-          </>
-    ),
+    sortable: true,
+    renderCell: (params) => renderGraphCell(params, 0),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -149,28 +173,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 1) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 1) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 1) >= 0? ' + ':' '} {calculatePercentage(params.value, 1)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params, 1),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -186,28 +189,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 2) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 2) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 2) >= 0? ' + ':' '} {calculatePercentage(params.value, 2)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params, 2),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -223,28 +205,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -260,28 +221,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -297,28 +237,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -345,28 +264,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 0) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 0) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 0) >= 0? ' + ':' '} {calculatePercentage(params.value, 0)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params, 0),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -382,28 +280,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 1) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 1) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 1) >= 0? ' + ':' '} {calculatePercentage(params.value, 1)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params, 1),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -419,28 +296,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 2) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 2) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 2) >= 0? ' + ':' '} {calculatePercentage(params.value, 2)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params, 2),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -456,28 +312,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -493,28 +328,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -530,28 +344,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -577,28 +370,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 0) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 0) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 0) >= 0? ' + ':' '} {calculatePercentage(params.value, 0)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params, 0),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -614,28 +386,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 1) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 1) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 1) >= 0? ' + ':' '} {calculatePercentage(params.value, 1)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params, 1),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -651,28 +402,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value, 2) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value, 2) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value, 2) >= 0? ' + ':' '} {calculatePercentage(params.value, 2)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params, 2),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -688,28 +418,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -725,28 +434,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%", textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -762,28 +450,7 @@ const columns : GridColDef[] = [
     headerClassName:'Column-header',
     minWidth: 180,
     sortable: false,
-    renderCell: (params) => (
-        <>
-        <div style={{width:'65%'}}>
-          <Sparklines
-              data={convertVal(params.value)}
-              margin={6}
-              height={40}
-              width={200}
-              >
-              <SparklinesLine
-                  style={{ strokeWidth: 5, stroke: calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208", fill: "none" }}
-              />
-            
-          </Sparklines>
-          </div>
-          <div style={{width:"20%", paddingLeft:"5%",textAlign: "right",fontSize:12,fontweight: "bold"}}>
-            <font style={{color:calculatePercentage(params.value) >= 0 ? "#2fa608":"#c71208"}}>
-            {calculatePercentage(params.value) >= 0? ' + ':' '} {calculatePercentage(params.value)} %
-            </font>
-          </div>
-          </>
-    ),
+    renderCell: (params) => renderGraphCell(params),
     renderHeader: (params: GridColumnHeaderParams) => (
       <>
         <strong>
@@ -793,6 +460,31 @@ const columns : GridColDef[] = [
     ),
   },
 ];
+
+function decimalPrice(price) {
+  if (price === 0) return '0';
+  var zero_count = 0, str;
+  while (price < 0.1) {
+    price *= 10;
+    zero_count++;
+  }
+  
+  if (price >= 1) {
+    str = price.toString();
+    
+    let zero_position = str.indexOf('.');
+    if (zero_position) {
+      str = str.substr(0, zero_position) + "." + str.substr(zero_position + 1, 3)
+    }
+  } else {
+    str = price.toString();
+    
+    str = str.substr(2, 3);
+    str = '+' + zero_count + ', ' + str;
+  }
+  
+  return str;
+}
   
 function convertVal(val) {
   var retArrary = [];
